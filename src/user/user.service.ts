@@ -57,7 +57,7 @@ export class UserService {
     return user;
   }
 
-  remove(id: string): boolean | string {
+  remove(id: string): boolean | 'not_found' {
     const index = users.findIndex((u) => u.id === id);
 
     if (index === -1) {

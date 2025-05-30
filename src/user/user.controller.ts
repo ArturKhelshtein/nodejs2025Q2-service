@@ -22,13 +22,6 @@ export class UserController {
   @Post()
   @HttpCode(201)
   create(@Body() dto: CreateUserDto) {
-    if (!dto.login || !dto.password) {
-      throw new HttpException(
-        'Missing required fields',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...createdUser } = this.userService.create(dto);
 
@@ -70,13 +63,6 @@ export class UserController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    if (!dto.oldPassword || !dto.newPassword) {
-      throw new HttpException(
-        'Missing required fields',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     const result = this.userService.updatePassword(id, dto);
 
     if (result === 'not_found') {
@@ -100,9 +86,9 @@ export class UserController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = this.userService.remove(id);
+    const user = this.userService.remove(id);
 
-    if (result === 'not_found') {
+    if (user === 'not_found') {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
