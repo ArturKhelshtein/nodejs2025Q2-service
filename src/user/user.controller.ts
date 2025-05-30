@@ -4,12 +4,12 @@ import {
   Get,
   Post,
   Body,
+  Put,
   Param,
   Delete,
   HttpException,
   HttpStatus,
   HttpCode,
-  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
