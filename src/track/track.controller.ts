@@ -20,7 +20,7 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateTrackDto) {
     return this.trackService.create(dto);
   }
@@ -61,7 +61,7 @@ export class TrackController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);

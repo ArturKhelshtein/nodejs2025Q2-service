@@ -7,11 +7,11 @@ export class CreateTrackDto {
 
   @IsString()
   @IsOptional()
-  artistId: string;
+  artistId?: string;
 
   @IsString()
   @IsOptional()
-  albumId: string;
+  albumId?: string;
 
   @IsNumber()
   @IsNotEmpty()
