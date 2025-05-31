@@ -11,23 +11,23 @@ import {
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
-import { AlbumService } from './album.service';
-import { CreateAlbumDto } from './dto/create-album.dto';
-import { UpdateAlbumDto } from './dto/update-album.dto';
+import { TrackService } from './track.service';
+import { CreateTrackDto } from './dto/create-track.dto';
+import { UpdateTrackDto } from './dto/update-track.dto';
 
-@Controller('album')
-export class AlbumController {
-  constructor(private readonly albumService: AlbumService) {}
+@Controller('track')
+export class TrackController {
+  constructor(private readonly trackService: TrackService) {}
 
   @Post()
   @HttpCode(201)
-  create(@Body() dto: CreateAlbumDto) {
-    return this.albumService.create(dto);
+  create(@Body() dto: CreateTrackDto) {
+    return this.trackService.create(dto);
   }
 
   @Get()
   findAll() {
-    return this.albumService.findAll();
+    return this.trackService.findAll();
   }
 
   @Get(':id')
@@ -36,28 +36,28 @@ export class AlbumController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.albumService.findOne(id);
+    const track = this.trackService.findOne(id);
 
-    if (album === 'not_found') {
+    if (track === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
 
-    return album;
+    return track;
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateAlbumDto) {
+  update(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.albumService.update(id, dto);
+    const track = this.trackService.update(id, dto);
 
-    if (album === 'not_found') {
+    if (track === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
 
-    return album;
+    return track;
   }
 
   @Delete(':id')
@@ -67,12 +67,12 @@ export class AlbumController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.albumService.remove(id);
+    const track = this.trackService.remove(id);
 
-    if (album === 'not_found') {
+    if (track === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
 
-    return album;
+    return track;
   }
 }
