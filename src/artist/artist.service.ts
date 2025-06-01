@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
@@ -7,6 +8,8 @@ import { artists } from './artist.store';
 
 @Injectable()
 export class ArtistService {
+  constructor(private readonly emitter: EventEmitter2) {}
+
   create(dto: CreateArtistDto) {
     const artist: Artist = {
       id: randomUUID(),
@@ -53,6 +56,7 @@ export class ArtistService {
     }
 
     artists.splice(index, 1);
+    this.emitter.emit('artist.deleted', id);
 
     return true;
   }

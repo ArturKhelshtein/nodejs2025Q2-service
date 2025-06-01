@@ -3,6 +3,7 @@ import { favorites } from './favorites.store';
 import { tracks } from 'src/track/track.store';
 import { albums } from 'src/album/album.store';
 import { artists } from 'src/artist/artist.store';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class FavoritesService {
@@ -89,5 +90,20 @@ export class FavoritesService {
 
     favorites.artists.splice(index, 1);
     return true;
+  }
+
+  @OnEvent('artist.deleted')
+  handleArtistDeleted(id: string) {
+    favorites.artists = favorites.artists.filter((a) => a.id !== id);
+  }
+
+  @OnEvent('album.deleted')
+  handleAlbumDeleted(id: string) {
+    favorites.albums = favorites.albums.filter((a) => a.id !== id);
+  }
+
+  @OnEvent('track.deleted')
+  handleTrackDeleted(id: string) {
+    favorites.tracks = favorites.tracks.filter((t) => t.id !== id);
   }
 }

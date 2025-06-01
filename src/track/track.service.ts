@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
@@ -7,6 +8,8 @@ import { tracks } from './track.store';
 
 @Injectable()
 export class TrackService {
+  constructor(private readonly emitter: EventEmitter2) {}
+
   create(dto: CreateTrackDto): Track {
     const track: Track = {
       id: randomUUID(),
@@ -57,7 +60,26 @@ export class TrackService {
     }
 
     tracks.splice(index, 1);
+    this.emitter.emit('track.deleted', id);
 
     return true;
+  }
+
+  @OnEvent('artist.deleted')
+  handleArtistDeleted(artistId: string) {
+    tracks.forEach((t) => {
+      if (t.artistId === artistId) {
+        t.artistId = null;
+      }
+    });
+  }
+
+  @OnEvent('album.deleted')
+  handleAlbumDeleted(albumId: string) {
+    tracks.forEach((t) => {
+      if (t.albumId === albumId) {
+        t.albumId = null;
+      }
+    });
   }
 }
