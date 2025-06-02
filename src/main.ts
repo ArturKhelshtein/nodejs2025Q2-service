@@ -5,6 +5,8 @@ import * as path from 'path';
 import * as YAML from 'yamljs';
 import * as swaggerUi from 'swagger-ui-express';
 
+const PORT = process.env.PORT || 4000;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -14,7 +16,10 @@ async function bootstrap() {
 
   app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-  await app.listen(process.env.PORT || 4000);
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`API is available at http://localhost:${PORT}/doc`);
+  });
 }
 
 bootstrap();
