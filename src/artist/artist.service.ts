@@ -10,7 +10,7 @@ import { artists } from './artist.store';
 export class ArtistService {
   constructor(private readonly emitter: EventEmitter2) {}
 
-  create(dto: CreateArtistDto) {
+  async create(dto: CreateArtistDto): Promise<Artist> {
     const artist: Artist = {
       id: randomUUID(),
       name: dto.name,
@@ -21,11 +21,11 @@ export class ArtistService {
     return artist;
   }
 
-  findAll(): Artist[] {
+  async findAll(): Promise<Artist[]> {
     return artists;
   }
 
-  findOne(id: string): Artist | 'not_found' {
+  async findOne(id: string): Promise<Artist | 'not_found'> {
     const artist = artists.find((a) => a.id === id);
 
     if (!artist) {
@@ -35,7 +35,10 @@ export class ArtistService {
     return artist;
   }
 
-  update(id: string, dto: UpdateArtistDto): Artist | 'not_found' {
+  async update(
+    id: string,
+    dto: UpdateArtistDto,
+  ): Promise<Artist | 'not_found'> {
     const artist = artists.find((a) => a.id === id);
 
     if (!artist) {
@@ -48,7 +51,7 @@ export class ArtistService {
     return artist;
   }
 
-  remove(id: string): boolean | 'not_found' {
+  async remove(id: string): Promise<boolean | 'not_found'> {
     const index = artists.findIndex((a) => a.id === id);
 
     if (index === -1) {

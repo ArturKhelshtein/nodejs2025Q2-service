@@ -21,16 +21,17 @@ export class UserController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateUserDto) {
+  async create(@Body() dto: CreateUserDto) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...createdUser } = this.userService.create(dto);
+    const { password, ...createdUser } = await this.userService.create(dto);
 
     return createdUser;
   }
 
   @Get()
-  findAll() {
-    const result = this.userService.findAll().map((u) => {
+  async findAll() {
+    const users = await this.userService.findAll();
+    const result = users.map((u) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...rest } = u;
       return rest;
@@ -40,12 +41,12 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = this.userService.findOne(id);
+    const result = await this.userService.findOne(id);
 
     if (result === 'not_found') {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -58,12 +59,12 @@ export class UserController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdatePasswordDto) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = this.userService.updatePassword(id, dto);
+    const result = await this.userService.updatePassword(id, dto);
 
     if (result === 'not_found') {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -81,12 +82,12 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const user = this.userService.remove(id);
+    const user = await this.userService.remove(id);
 
     if (user === 'not_found') {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

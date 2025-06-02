@@ -4,30 +4,31 @@ import { tracks } from 'src/track/track.store';
 import { albums } from 'src/album/album.store';
 import { artists } from 'src/artist/artist.store';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Favorite } from './entities/favorite.entity';
 
 @Injectable()
 export class FavoritesService {
-  findAll() {
+  async findAll(): Promise<Favorite> {
     return favorites;
   }
 
-  addTrack(id: string): boolean | 'unprocessable' {
+  async addTrack(id: string): Promise<boolean | 'unprocessable'> {
     const track = tracks.find((t) => t.id === id);
 
     if (!track) {
       return 'unprocessable';
     }
 
-    if (favorites.tracks.some((t) => t.id === track.id)) {
-      return true;
-    }
+    const alreadyExists = favorites.tracks.some((t) => t.id === track.id);
 
-    favorites.tracks.push(track);
+    if (!alreadyExists) {
+      favorites.tracks.push(track);
+    }
 
     return true;
   }
 
-  removeTrack(id: string): boolean | 'not_found' {
+  async removeTrack(id: string): Promise<boolean | 'not_found'> {
     const index = favorites.tracks.findIndex((t) => t.id === id);
 
     if (index === -1) {
@@ -38,7 +39,7 @@ export class FavoritesService {
     return true;
   }
 
-  addAlbum(id: string): boolean | 'unprocessable' {
+  async addAlbum(id: string): Promise<boolean | 'unprocessable'> {
     const album = albums.find((a) => a.id === id);
 
     if (!album) {
@@ -54,7 +55,7 @@ export class FavoritesService {
     return true;
   }
 
-  removeAlbum(id: string): boolean | 'not_found' {
+  async removeAlbum(id: string): Promise<boolean | 'not_found'> {
     const index = favorites.albums.findIndex((a) => a.id === id);
 
     if (index === -1) {
@@ -65,7 +66,7 @@ export class FavoritesService {
     return true;
   }
 
-  addArtist(id: string): boolean | 'unprocessable' {
+  async addArtist(id: string): Promise<boolean | 'unprocessable'> {
     const artist = artists.find((a) => a.id === id);
 
     if (!artist) {
@@ -81,7 +82,7 @@ export class FavoritesService {
     return true;
   }
 
-  removeArtist(id: string): boolean | 'not_found' {
+  async removeArtist(id: string): Promise<boolean | 'not_found'> {
     const index = favorites.artists.findIndex((a) => a.id === id);
 
     if (index === -1) {

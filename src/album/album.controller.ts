@@ -21,22 +21,22 @@ export class AlbumController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateAlbumDto) {
-    return this.albumService.create(dto);
+  async create(@Body() dto: CreateAlbumDto) {
+    return await this.albumService.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  async findAll() {
+    return await this.albumService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.albumService.findOne(id);
+    const album = await this.albumService.findOne(id);
 
     if (album === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
@@ -46,12 +46,12 @@ export class AlbumController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateAlbumDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateAlbumDto) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.albumService.update(id, dto);
+    const album = await this.albumService.update(id, dto);
 
     if (album === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
@@ -62,12 +62,12 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const album = this.albumService.remove(id);
+    const album = await this.albumService.remove(id);
 
     if (album === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);

@@ -21,22 +21,22 @@ export class ArtistController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateArtistDto) {
-    return this.artistService.create(dto);
+  async create(@Body() dto: CreateArtistDto) {
+    return await this.artistService.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const artist = this.artistService.findOne(id);
+    const artist = await this.artistService.findOne(id);
 
     if (artist === 'not_found') {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
@@ -46,12 +46,12 @@ export class ArtistController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateArtistDto) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const artist = this.artistService.update(id, dto);
+    const artist = await this.artistService.update(id, dto);
 
     if (artist === 'not_found') {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
@@ -62,12 +62,12 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const artist = this.artistService.remove(id);
+    const artist = await this.artistService.remove(id);
 
     if (artist === 'not_found') {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);

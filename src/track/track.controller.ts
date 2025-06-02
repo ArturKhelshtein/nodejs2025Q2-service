@@ -21,22 +21,22 @@ export class TrackController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateTrackDto) {
-    return this.trackService.create(dto);
+  async create(@Body() dto: CreateTrackDto) {
+    return await this.trackService.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.trackService.findAll();
+  async findAll() {
+    return await this.trackService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
 
     if (track === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
@@ -46,12 +46,12 @@ export class TrackController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateTrackDto) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const track = this.trackService.update(id, dto);
+    const track = await this.trackService.update(id, dto);
 
     if (track === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
@@ -62,12 +62,12 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const track = this.trackService.remove(id);
+    const track = await this.trackService.remove(id);
 
     if (track === 'not_found') {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);

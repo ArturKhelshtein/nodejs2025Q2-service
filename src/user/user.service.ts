@@ -7,7 +7,7 @@ import { users } from './user.store';
 
 @Injectable()
 export class UserService {
-  create(dto: CreateUserDto): User {
+  async create(dto: CreateUserDto): Promise<User> {
     const now = Date.now();
     const user: User = {
       id: randomUUID(),
@@ -22,11 +22,11 @@ export class UserService {
     return user;
   }
 
-  findAll(): User[] {
+  async findAll(): Promise<User[]> {
     return users;
   }
 
-  findOne(id: string): User | 'not_found' {
+  async findOne(id: string): Promise<User | 'not_found'> {
     const user = users.find((u) => u.id === id);
 
     if (!user) {
@@ -36,10 +36,10 @@ export class UserService {
     return user;
   }
 
-  updatePassword(
+  async updatePassword(
     id: string,
     dto: UpdatePasswordDto,
-  ): User | 'not_found' | 'wrong_password' {
+  ): Promise<User | 'not_found' | 'wrong_password'> {
     const user = users.find((u) => u.id === id);
 
     if (!user) {
@@ -57,7 +57,7 @@ export class UserService {
     return user;
   }
 
-  remove(id: string): boolean | 'not_found' {
+  async remove(id: string): Promise<boolean | 'not_found'> {
     const index = users.findIndex((u) => u.id === id);
 
     if (index === -1) {

@@ -10,7 +10,7 @@ import { albums } from './album.store';
 export class AlbumService {
   constructor(private readonly emitter: EventEmitter2) {}
 
-  create(dto: CreateAlbumDto): Album {
+  async create(dto: CreateAlbumDto): Promise<Album> {
     const album: Album = {
       id: randomUUID(),
       name: dto.name,
@@ -22,11 +22,11 @@ export class AlbumService {
     return album;
   }
 
-  findAll(): Album[] {
+  async findAll(): Promise<Album[]> {
     return albums;
   }
 
-  findOne(id: string): Album | 'not_found' {
+  async findOne(id: string): Promise<Album | 'not_found'> {
     const album = albums.find((a) => a.id === id);
 
     if (!album) {
@@ -36,7 +36,7 @@ export class AlbumService {
     return album;
   }
 
-  update(id: string, dto: UpdateAlbumDto): Album | 'not_found' {
+  async update(id: string, dto: UpdateAlbumDto): Promise<Album | 'not_found'> {
     const album = albums.find((a) => a.id === id);
 
     if (!album) {
@@ -50,7 +50,7 @@ export class AlbumService {
     return album;
   }
 
-  remove(id: string): boolean | 'not_found' {
+  async remove(id: string): Promise<boolean | 'not_found'> {
     const index = albums.findIndex((a) => a.id === id);
 
     if (index === -1) {

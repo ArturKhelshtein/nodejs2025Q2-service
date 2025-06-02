@@ -10,7 +10,7 @@ import { tracks } from './track.store';
 export class TrackService {
   constructor(private readonly emitter: EventEmitter2) {}
 
-  create(dto: CreateTrackDto): Track {
+  async create(dto: CreateTrackDto): Promise<Track> {
     const track: Track = {
       id: randomUUID(),
       name: dto.name,
@@ -23,11 +23,11 @@ export class TrackService {
     return track;
   }
 
-  findAll(): Track[] {
+  async findAll(): Promise<Track[]> {
     return tracks;
   }
 
-  findOne(id: string): Track | 'not_found' {
+  async findOne(id: string): Promise<Track | 'not_found'> {
     const track = tracks.find((t) => t.id === id);
 
     if (!track) {
@@ -37,7 +37,7 @@ export class TrackService {
     return track;
   }
 
-  update(id: string, dto: UpdateTrackDto): Track | 'not_found' {
+  async update(id: string, dto: UpdateTrackDto): Promise<Track | 'not_found'> {
     const track = tracks.find((t) => t.id === id);
 
     if (!track) {
@@ -52,7 +52,7 @@ export class TrackService {
     return track;
   }
 
-  remove(id: string): boolean | 'not_found' {
+  async remove(id: string): Promise<boolean | 'not_found'> {
     const index = tracks.findIndex((t) => t.id === id);
 
     if (index === -1) {
