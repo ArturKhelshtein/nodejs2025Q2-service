@@ -1,5 +1,7 @@
 # Home Library Service
 
+Task: https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/rest-service/assignment.md
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
@@ -8,13 +10,14 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone git@github.com:ArturKhelshtein/nodejs2025Q2-service.git
+cd nodejs2025Q2-service
 ```
 
 ## Installing NPM modules
 
 ```
-npm install
+npm ci
 ```
 
 ## Running application
@@ -64,9 +67,3 @@ npm run lint
 ```
 npm run format
 ```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
