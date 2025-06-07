@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: home-library-postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: home_library
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - home-library-net
+
+  app:
+    container_name: home-library-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/home_library
+    depends_on:
+      - postgres
+    networks:
+      - home-library-net
+    command: npm run start:dev
+
+volumes:
+  pgdata:
+
+networks:
+  home-library-net:
+    driver: bridge

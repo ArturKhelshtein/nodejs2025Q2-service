@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as path from 'path';
 import * as YAML from 'yamljs';
 import * as swaggerUi from 'swagger-ui-express';
+import 'dotenv/config';
 
 const PORT = process.env.PORT || 4000;
 
