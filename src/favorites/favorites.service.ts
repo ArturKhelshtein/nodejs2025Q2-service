@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { favorites } from './favorites.store';
-import { tracks } from 'src/track/track.store';
-import { albums } from 'src/album/album.store';
-import { artists } from 'src/artist/artist.store';
 import { OnEvent } from '@nestjs/event-emitter';
+import { favorites, tracks, albums, artists } from 'src/db';
 import { Favorite } from './entities/favorite.entity';
 
 @Injectable()

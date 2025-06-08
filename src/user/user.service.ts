@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { users } from './user.store';
+import { users } from 'src/db';
 
 @Injectable()
 export class UserService {
