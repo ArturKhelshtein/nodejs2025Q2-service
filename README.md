@@ -36,8 +36,10 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ```
 cp .env.example .env
-docker build -t arturkhelshtein/home-library-app:latest .
-docker run arturkhelshtein/home-library-app:latest
+/*dev-mode*/ npx prisma generate
+/*dev-mode*/ docker-compose -f docker-compose.dev.yml up --build
+/*prod-mode*/ docker-compose up --build
+docker exec -it home-library-app npx prisma migrate deploy
 ```
 
 ## Testing

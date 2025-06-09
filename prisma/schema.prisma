@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -27,6 +27,7 @@ model Artist {
   grammy      Boolean
   albums      Album[]
   tracks      Track[]
+
   favoritedBy User[]   @relation("UserFavoriteArtists")
 }
 
@@ -37,6 +38,7 @@ model Album {
   artistId    String?
   artist      Artist?  @relation(fields: [artistId], references: [id])
   tracks      Track[]
+
   favoritedBy User[]   @relation("UserFavoriteAlbums")
 }
 
@@ -48,5 +50,6 @@ model Track {
   albumId     String?
   album       Album?   @relation(fields: [albumId], references: [id])
   duration    Int
+
   favoritedBy User[]   @relation("UserFavoriteTracks")
 }
