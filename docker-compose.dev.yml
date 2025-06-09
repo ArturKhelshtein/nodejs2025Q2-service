@@ -31,9 +31,9 @@ services:
       - postgres
     networks:
       - home-library-net
-    volumes:
-      - .:/app
-      - /app/node_modules
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
     command: sh -c "npx prisma generate && echo 'Prisma generated' && npm run start:dev"
 
 volumes:
