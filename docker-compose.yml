@@ -22,16 +22,15 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '${PORT}:${PORT}'
+      - '${PORT}:4000'
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
     env_file:
       - .env
     depends_on:
       - postgres
     networks:
       - home-library-net
-    command: npm run start:dev
 
 volumes:
   pgdata:
