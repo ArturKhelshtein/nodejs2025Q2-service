@@ -1,23 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+
+type User = Awaited<ReturnType<PrismaClient['user']['findUnique']>>;
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateUserDto): Promise<User> {
-    const now = Date.now();
-
     return this.prisma.user.create({
       data: {
         login: dto.login,
         password: dto.password,
         version: 1,
-        createdAt: now,
-        updatedAt: now,
       },
     });
   }
@@ -57,7 +55,6 @@ export class UserService {
       data: {
         password: dto.newPassword,
         version: user.version + 1,
-        updatedAt: Date.now(),
       },
     });
   }
