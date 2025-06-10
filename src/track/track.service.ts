@@ -1,14 +1,19 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './entities/track.entity';
-import { tracks } from 'src/db';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+type Track = Awaited<ReturnType<PrismaClient['track']['findUnique']>>;
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly emitter: EventEmitter2) {}
+  constructor(
+    private readonly emitter: EventEmitter2,
+    private prisma: PrismaService,
+  ) {}
 
   async create(dto: CreateTrackDto): Promise<Track> {
     const track: Track = {
@@ -18,17 +23,16 @@ export class TrackService {
       albumId: dto.albumId,
       duration: dto.duration,
     };
-    tracks.push(track);
 
-    return track;
+    return await this.prisma.track.create({ data: track });
   }
 
   async findAll(): Promise<Track[]> {
-    return tracks;
+    return await this.prisma.track.findMany();
   }
 
   async findOne(id: string): Promise<Track | 'not_found'> {
-    const track = tracks.find((t) => t.id === id);
+    const track = await this.prisma.track.findUnique({ where: { id } });
 
     if (!track) {
       return 'not_found';
@@ -38,7 +42,7 @@ export class TrackService {
   }
 
   async update(id: string, dto: UpdateTrackDto): Promise<Track | 'not_found'> {
-    const track = tracks.find((t) => t.id === id);
+    const track = await this.prisma.track.findUnique({ where: { id } });
 
     if (!track) {
       return 'not_found';
@@ -49,37 +53,35 @@ export class TrackService {
     track.albumId = dto.albumId;
     track.duration = dto.duration;
 
-    return track;
+    return await this.prisma.track.update({ where: { id }, data: track });
   }
 
   async remove(id: string): Promise<boolean | 'not_found'> {
-    const index = tracks.findIndex((t) => t.id === id);
+    const track = await this.prisma.track.findUnique({ where: { id } });
 
-    if (index === -1) {
+    if (!track) {
       return 'not_found';
     }
 
-    tracks.splice(index, 1);
+    await this.prisma.track.delete({ where: { id } });
     this.emitter.emit('track.deleted', id);
 
     return true;
   }
 
   @OnEvent('artist.deleted')
-  handleArtistDeleted(artistId: string) {
-    tracks.forEach((t) => {
-      if (t.artistId === artistId) {
-        t.artistId = null;
-      }
+  async handleArtistDeleted(artistId: string) {
+    await this.prisma.track.updateMany({
+      where: { artistId },
+      data: { artistId: null },
     });
   }
 
   @OnEvent('album.deleted')
-  handleAlbumDeleted(albumId: string) {
-    tracks.forEach((t) => {
-      if (t.albumId === albumId) {
-        t.albumId = null;
-      }
+  async handleAlbumDeleted(albumId: string) {
+    await this.prisma.track.updateMany({
+      where: { albumId },
+      data: { albumId: null },
     });
   }
 }

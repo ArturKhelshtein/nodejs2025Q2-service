@@ -38,9 +38,6 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 cp .env.example .env
 /*dev-mode*/ docker-compose -f docker-compose.dev.yml up --build
 /*prod-mode*/ docker-compose up --build
-docker exec -it home-library-app npx prisma migrate deploy
-docker exec -id home-library-app npx prisma generate
-
 docker-compose down -v (удалить старые тома и пересоздать БД)
 docker logs home-library-app --follow (посмотреть логи)
 docker-compose down && docker-compose up --build (перезапуск)

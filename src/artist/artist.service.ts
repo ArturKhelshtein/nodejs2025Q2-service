@@ -1,14 +1,19 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { Artist } from './entities/artist.entity';
-import { artists } from 'src/db';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+type Artist = Awaited<ReturnType<PrismaClient['artist']['findUnique']>>;
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly emitter: EventEmitter2) {}
+  constructor(
+    private readonly emitter: EventEmitter2,
+    private prisma: PrismaService,
+  ) {}
 
   async create(dto: CreateArtistDto): Promise<Artist> {
     const artist: Artist = {
@@ -16,17 +21,16 @@ export class ArtistService {
       name: dto.name,
       grammy: dto.grammy,
     };
-    artists.push(artist);
 
-    return artist;
+    return await this.prisma.artist.create({ data: artist });
   }
 
   async findAll(): Promise<Artist[]> {
-    return artists;
+    return await this.prisma.artist.findMany();
   }
 
   async findOne(id: string): Promise<Artist | 'not_found'> {
-    const artist = artists.find((a) => a.id === id);
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
 
     if (!artist) {
       return 'not_found';
@@ -39,7 +43,7 @@ export class ArtistService {
     id: string,
     dto: UpdateArtistDto,
   ): Promise<Artist | 'not_found'> {
-    const artist = artists.find((a) => a.id === id);
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
 
     if (!artist) {
       return 'not_found';
@@ -48,17 +52,17 @@ export class ArtistService {
     artist.name = dto.name;
     artist.grammy = dto.grammy;
 
-    return artist;
+    return await this.prisma.artist.update({ where: { id }, data: artist });
   }
 
   async remove(id: string): Promise<boolean | 'not_found'> {
-    const index = artists.findIndex((a) => a.id === id);
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
 
-    if (index === -1) {
+    if (!artist) {
       return 'not_found';
     }
 
-    artists.splice(index, 1);
+    await this.prisma.artist.delete({ where: { id } });
     this.emitter.emit('artist.deleted', id);
 
     return true;

@@ -10,24 +10,43 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('favs')
 export class FavoritesController {
-  constructor(private readonly favoritesService: FavoritesService) {}
+  constructor(
+    private readonly favoritesService: FavoritesService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  private async getFirstUserId(): Promise<string> {
+    let user = await this.prisma.user.findFirst();
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          login: 'default-user',
+          password: 'default-password',
+        },
+      });
+    }
+    return user.id;
+  }
 
   @Get()
   async findAll() {
-    return await this.favoritesService.findAll();
+    const userId = await this.getFirstUserId();
+    return await this.favoritesService.findAll(userId);
   }
 
   @Post('track/:id')
   @HttpCode(HttpStatus.CREATED)
   async addTrack(@Param('id') id: string) {
+    const userId = await this.getFirstUserId();
     if (!isUuid(id)) {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.favoritesService.addTrack(id);
+    const result = await this.favoritesService.addTrack(userId, id);
 
     if (result === 'unprocessable') {
       throw new HttpException(
@@ -46,7 +65,8 @@ export class FavoritesController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.favoritesService.removeTrack(id);
+    const userId = await this.getFirstUserId();
+    const result = await this.favoritesService.removeTrack(userId, id);
 
     if (result === 'not_found') {
       throw new HttpException('Track not in favorites', HttpStatus.NOT_FOUND);
@@ -62,7 +82,8 @@ export class FavoritesController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.favoritesService.addAlbum(id);
+    const userId = await this.getFirstUserId();
+    const result = await this.favoritesService.addAlbum(userId, id);
 
     if (result === 'unprocessable') {
       throw new HttpException(
@@ -81,7 +102,8 @@ export class FavoritesController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.favoritesService.removeAlbum(id);
+    const userId = await this.getFirstUserId();
+    const result = await this.favoritesService.removeAlbum(userId, id);
 
     if (result === 'not_found') {
       throw new HttpException('Track not in favorites', HttpStatus.NOT_FOUND);
@@ -97,7 +119,8 @@ export class FavoritesController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.favoritesService.addArtist(id);
+    const userId = await this.getFirstUserId();
+    const result = await this.favoritesService.addArtist(userId, id);
 
     if (result === 'unprocessable') {
       throw new HttpException(
@@ -116,7 +139,8 @@ export class FavoritesController {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.favoritesService.removeArtist(id);
+    const userId = await this.getFirstUserId();
+    const result = await this.favoritesService.removeArtist(userId, id);
 
     if (result === 'not_found') {
       throw new HttpException('Track not in favorites', HttpStatus.NOT_FOUND);
