@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:15
     container_name: home-library-postgres
-    restart: always
+    restart: unless-stopped
     ports:
       - '${POSTGRES_PORT}:5432'
     environment:
@@ -31,6 +31,10 @@ services:
       - postgres
     networks:
       - home-library-net
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
 
 volumes:
   pgdata:
