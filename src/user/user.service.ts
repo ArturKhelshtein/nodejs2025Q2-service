@@ -1,46 +1,61 @@
-import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
+import { PrismaClient } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { users } from './user.store';
+import { UserDto } from './dto/user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+type User = Awaited<ReturnType<PrismaClient['user']['findUnique']>>;
 
 @Injectable()
 export class UserService {
-  async create(dto: CreateUserDto): Promise<User> {
-    const now = Date.now();
-    const user: User = {
-      id: randomUUID(),
-      login: dto.login,
-      password: dto.password,
-      version: 1,
-      createdAt: now,
-      updatedAt: now,
-    };
-    users.push(user);
+  constructor(private prisma: PrismaService) {}
 
-    return user;
+  private toDto(user: User): UserDto {
+    return new UserDto(user);
+  }
+
+  async create(dto: CreateUserDto): Promise<UserDto> {
+    const cratedUser = await this.prisma.user.create({
+      data: {
+        login: dto.login,
+        password: dto.password,
+        version: 1,
+      },
+      select: {
+        id: true,
+        login: true,
+        password: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return this.toDto(cratedUser);
   }
 
   async findAll(): Promise<User[]> {
-    return users;
+    return this.prisma.user.findMany();
   }
 
-  async findOne(id: string): Promise<User | 'not_found'> {
-    const user = users.find((u) => u.id === id);
+  async findOne(id: string): Promise<UserDto | 'not_found'> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
 
     if (!user) {
       return 'not_found';
     }
 
-    return user;
+    return this.toDto(user);
   }
 
   async updatePassword(
     id: string,
     dto: UpdatePasswordDto,
-  ): Promise<User | 'not_found' | 'wrong_password'> {
-    const user = users.find((u) => u.id === id);
+  ): Promise<UserDto | 'not_found' | 'wrong_password'> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
       return 'not_found';
@@ -50,21 +65,25 @@ export class UserService {
       return 'wrong_password';
     }
 
-    user.password = dto.newPassword;
-    user.version += 1;
-    user.updatedAt = Date.now();
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: dto.newPassword,
+        version: user.version + 1,
+      },
+    });
 
-    return user;
+    return this.toDto(updatedUser);
   }
 
   async remove(id: string): Promise<boolean | 'not_found'> {
-    const index = users.findIndex((u) => u.id === id);
+    const user = await this.prisma.user.findUnique({ where: { id } });
 
-    if (index === -1) {
+    if (!user) {
       return 'not_found';
     }
 
-    users.splice(index, 1);
+    await this.prisma.user.delete({ where: { id } });
 
     return true;
   }
