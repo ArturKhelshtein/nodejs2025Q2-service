@@ -30,7 +30,7 @@ export class AuthService {
       });
 
       const user = await this.prisma.user.findUnique({
-        where: { id: payload.sub }
+        where: { id: payload.sub },
       });
 
       if (!user) {
