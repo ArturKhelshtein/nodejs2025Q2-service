@@ -18,6 +18,7 @@ COPY --from=deps /app/prisma ./prisma
 COPY tsconfig.json ./
 COPY migrate.sh ./
 COPY src ./src
+COPY doc ./doc
 RUN dos2unix migrate.sh && \
     chmod +x migrate.sh && \
     ls -la migrate.sh
