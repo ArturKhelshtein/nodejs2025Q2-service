@@ -22,26 +22,26 @@ cd nodejs2025Q2-service
 npm ci
 ```
 
-## Running application
+## Running application with docker
+
+start docker desktop
 
 ```
-npm start
+cp .env.example .env
+docker run
+docker-compose up --build
+```
+
+tips
+```
+docker-compose down -v (удалить старые тома и пересоздать БД)
+docker logs home-library-app --follow (посмотреть логи)
+docker-compose down && docker-compose up --build (перезапуск)
 ```
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
-
-## Running with docker
-
-```
-cp .env.example .env
-/*dev-mode*/ docker-compose -f docker-compose.dev.yml up --build
-/*prod-mode*/ docker-compose up --build
-docker-compose down -v (удалить старые тома и пересоздать БД)
-docker logs home-library-app --follow (посмотреть логи)
-docker-compose down && docker-compose up --build (перезапуск)
-```
 
 ## Testing
 
