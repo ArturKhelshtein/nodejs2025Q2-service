@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Waiting for database..."
 while ! nc -z postgres 5432; do
   sleep 1
